@@ -1,0 +1,78 @@
+name: Build & Release APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (leave empty for build-<run number>)"
+        required: false
+        default: ""
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Stable signing: add repo secrets KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD.
+      # Without them a temporary key is generated (APK installs fine, but cannot update an APK signed by another key).
+      - name: Prepare signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          STORE="$RUNNER_TEMP/release.jks"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$STORE"
+          else
+            echo "::warning::No signing secrets set, using a temporary key"
+            KEYSTORE_PASSWORD="temp-pass-123"; KEY_ALIAS="temp"; KEY_PASSWORD="temp-pass-123"
+            keytool -genkeypair -keystore "$STORE" -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+              -alias "$KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Gallery"
+          fi
+          {
+            echo "SIGNING_STORE_FILE=$STORE"
+            echo "SIGNING_STORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "SIGNING_KEY_ALIAS=$KEY_ALIAS"
+            echo "SIGNING_KEY_PASSWORD=$KEY_PASSWORD"
+          } >> "$GITHUB_ENV"
+
+      - name: Build release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleFossRelease --no-daemon
+
+      - name: Collect APK
+        id: apk
+        run: |
+          APK=$(find app/build/outputs/apk/foss/release -name '*.apk' | head -n 1)
+          NAME="Gallery-cloud-$(date +%Y%m%d)-${GITHUB_RUN_NUMBER}.apk"
+          mkdir -p dist && cp "$APK" "dist/$NAME"
+          echo "path=dist/$NAME" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: dist/*.apk
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag != '' && github.event.inputs.tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name || format('build-{0}', github.run_number)) }}
+          name: ${{ github.event.inputs.tag != '' && github.event.inputs.tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name || format('Build {0}', github.run_number)) }}
+          files: ${{ steps.apk.outputs.path }}
+          generate_release_notes: true
