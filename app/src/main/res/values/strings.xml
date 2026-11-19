@@ -303,4 +303,26 @@
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
     -->
+
+    <!-- Cloud sync (encrypted Telegram backup) -->
+    <string name="cloud_sync">Cloud sync</string>
+    <string name="cloud_sync_intro">Photos are encrypted on this device before upload. Telegram only receives random-looking .bin files, each with its own key. Create a bot with @BotFather, make a private channel, add the bot as admin (post, edit, delete and pin messages) and enter the details below. Keep your recovery key safe: without it the photos cannot be restored.</string>
+    <string name="cloud_bot_token">Bot token</string>
+    <string name="cloud_chat_id">Channel / group id (e.g. -100123…)</string>
+    <string name="cloud_recovery_key">Recovery key / passphrase</string>
+    <string name="cloud_generate_key">Generate strong key</string>
+    <string name="cloud_save_test">Save and test connection</string>
+    <string name="cloud_folders_to_sync">Folders to back up</string>
+    <string name="cloud_no_folders">No folder selected</string>
+    <string name="cloud_add_folder">Add folder</string>
+    <string name="cloud_clear_folders">Clear</string>
+    <string name="cloud_auto_sync">Sync automatically when the app is opened</string>
+    <string name="cloud_sync_now">Sync now</string>
+    <string name="cloud_setup_first">Save and test the connection first</string>
+    <string name="cloud_connected">Connected. Write down your recovery key.</string>
+    <string name="cloud_fill_all">Fill in token, chat id and recovery key</string>
+    <string name="cloud_key_created">New key generated, save it somewhere safe before continuing:
+%s</string>
+    <string name="cloud_sync_done">Done: %1$d uploaded, %2$d downloaded, %3$d failed</string>
+    <string name="cloud_sync_failed">Sync failed: %s</string>
 </resources>

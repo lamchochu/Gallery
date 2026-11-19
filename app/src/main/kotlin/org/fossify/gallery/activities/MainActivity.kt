@@ -296,6 +296,7 @@ class MainActivity : SimpleActivity(), DirectoryOperationsListener {
         mTimeFormat = getTimeFormat()
 
         refreshMenuItems()
+        org.fossify.gallery.cloud.CloudSyncManager.autoSyncIfDue(this)
 
         if (mStoredAnimateGifs != config.animateGifs) {
             getRecyclerAdapter()?.updateAnimateGifs(config.animateGifs)

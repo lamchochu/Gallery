@@ -9,6 +9,7 @@
         android:maxSdkVersion="40"
         tools:replace="android:maxSdkVersion" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
@@ -174,6 +175,13 @@
             android:configChanges="orientation"
             android:exported="false"
             android:label="@string/include_folders"
+            android:parentActivityName=".activities.SettingsActivity" />
+
+        <activity
+            android:name=".activities.CloudSyncActivity"
+            android:configChanges="orientation"
+            android:exported="false"
+            android:label="@string/cloud_sync"
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity

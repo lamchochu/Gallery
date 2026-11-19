@@ -58,6 +58,7 @@ class SettingsActivity : SimpleActivity() {
         setupChangeDateTimeFormat()
         setupFileLoadingPriority()
         setupManageIncludedFolders()
+        setupCloudSync()
         setupManageExcludedFolders()
         setupManageHiddenFolders()
         setupSearchAllFiles()
@@ -213,6 +214,12 @@ class SettingsActivity : SimpleActivity() {
             } else {
                 startActivity(Intent(this, IncludedFoldersActivity::class.java))
             }
+        }
+    }
+
+    private fun setupCloudSync() {
+        binding.settingsCloudSyncHolder.setOnClickListener {
+            startActivity(Intent(this, CloudSyncActivity::class.java))
         }
     }
 

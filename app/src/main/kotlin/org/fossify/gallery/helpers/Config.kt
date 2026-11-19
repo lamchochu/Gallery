@@ -602,4 +602,25 @@ class Config(context: Context) : BaseConfig(context) {
     var showPermissionRationale: Boolean
         get() = prefs.getBoolean(SHOW_PERMISSION_RATIONALE, false)
         set(showPermissionRationale) = prefs.edit().putBoolean(SHOW_PERMISSION_RATIONALE, showPermissionRationale).apply()
+
+    var cloudSyncEnabled: Boolean
+        get() = prefs.getBoolean(CLOUD_SYNC_ENABLED, false)
+        set(value) = prefs.edit().putBoolean(CLOUD_SYNC_ENABLED, value).apply()
+
+    var cloudAutoSync: Boolean
+        get() = prefs.getBoolean(CLOUD_AUTO_SYNC, true)
+        set(value) = prefs.edit().putBoolean(CLOUD_AUTO_SYNC, value).apply()
+
+    var cloudSyncFolders: MutableSet<String>
+        get() = prefs.getStringSet(CLOUD_SYNC_FOLDERS, HashSet<String>())!!.toMutableSet()
+        set(value) = prefs.edit().remove(CLOUD_SYNC_FOLDERS).putStringSet(CLOUD_SYNC_FOLDERS, value).apply()
+
+    var cloudLastSync: Long
+        get() = prefs.getLong(CLOUD_LAST_SYNC, 0L)
+        set(value) = prefs.edit().putLong(CLOUD_LAST_SYNC, value).apply()
+
+    /** Random id of this installation, used so a device does not re-download its own uploads. */
+    var cloudDeviceId: String
+        get() = prefs.getString(CLOUD_DEVICE_ID, "")!!
+        set(value) = prefs.edit().putString(CLOUD_DEVICE_ID, value).apply()
 }
